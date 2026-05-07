@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>카카오톡 줄바꿈 도우미</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f0f0f5;
+      --surface: #ffffff;
+      --border: #e0e0e8;
+      --primary: #fee500;
+      --primary-dark: #e6cf00;
+      --text: #1a1a1a;
+      --text-sub: #666;
+      --bubble-sent: #fee500;
+      --bubble-recv: #ffffff;
+      --chat-bg: #b2c7d9;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    header .icon {
+      width: 32px; height: 32px;
+      background: #fee500;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 20px;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    /* ── Left panel ── */
+    .panel {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-body { padding: 18px; }
+
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+
+    .seg-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .seg-group button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      transition: all 0.15s;
+    }
+    .seg-group button + button { border-left: 1px solid var(--border); }
+    .seg-group button.active {
+      background: var(--text);
+      color: #fff;
+    }
+
+    select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: var(--surface);
+      color: var(--text);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      cursor: pointer;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 160px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    textarea:focus { outline: none; border-color: #aaa; }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .metric-box {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .metric-box .val {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .metric-box .key {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    /* ── Right panel ── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Chat preview */
+    .chat-wrap {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .chat-bar {
+      background: #3c4043;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-bar .room-name {
+      color: #fff;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .chat-bar .member-count {
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+    }
+
+    .chat-viewport {
+      background: var(--chat-bg);
+      padding: 16px 12px;
+      min-height: 300px;
+      max-height: 500px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .msg-row.sent {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #c4c4c4;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      background: linear-gradient(135deg, #a0a0a0, #d0d0d0);
+    }
+
+    .msg-col { display: flex; flex-direction: column; gap: 3px; max-width: 75%; }
+    .msg-row.sent .msg-col { align-items: flex-end; }
+
+    .sender-name {
+      font-size: 11px;
+      color: rgba(0,0,0,0.5);
+      padding-left: 2px;
+    }
+
+    .bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .msg-row.sent .bubble-row { flex-direction: row-reverse; }
+
+    .bubble {
+      padding: 9px 12px;
+      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+    }
+    .bubble-line {
+      white-space: nowrap;
+      display: block;
+    }
+    .bubble.sent {
+      background: var(--bubble-sent);
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.recv {
+      background: var(--bubble-recv);
+      border-top-left-radius: 4px;
+    }
+
+    .bubble-meta {
+      font-size: 10px;
+      color: rgba(0,0,0,0.4);
+      padding-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    /* Line break indicator inside bubble */
+    .lb-mark {
+      display: inline-block;
+      background: rgba(0,0,0,0.08);
+      border-radius: 3px;
+      font-size: 10px;
+      padding: 0 3px;
+      vertical-align: middle;
+      margin: 0 1px;
+    }
+
+    /* Output section */
+    .output-panel {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .output-header {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .output-header span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .btn-copy {
+      background: var(--primary);
+      color: var(--text);
+    }
+    .btn-copy:hover { background: var(--primary-dark); }
+    .btn-copy.copied { background: #4caf50; color: #fff; }
+
+    .output-text {
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: 80px;
+      color: var(--text);
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+
+    .line-tag {
+      display: inline-block;
+      font-size: 10px;
+      color: #999;
+      background: #f0f0f0;
+      border-radius: 3px;
+      padding: 0 3px;
+      margin: 0 2px;
+      font-family: monospace;
+      vertical-align: middle;
+    }
+
+    /* View toggle */
+    .view-toggle {
+      display: flex;
+      gap: 8px;
+      padding: 12px 18px 0;
+    }
+    .view-toggle button {
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--text-sub);
+      transition: all 0.15s;
+    }
+    .view-toggle button.active {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text);
+    }
+
+    /* hidden measurement element */
+    #ruler {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      white-space: nowrap;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .auto-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .auto-row select { flex: 1; }
+    .btn-auto {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-auto:hover { background: var(--border); }
+    .btn-auto.active { background: var(--text); color: #fff; border-color: var(--text); }
+    .auto-tag {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-sub);
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 40px;
+      color: rgba(0,0,0,0.3);
+    }
+    .empty-state .em { font-size: 36px; }
+    .empty-state p { font-size: 14px; }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="icon">💬</div>
+  <h1>카카오톡 줄바꿈 도우미</h1>
+</header>
+
+<div class="layout">
+  <!-- Left -->
+  <div class="panel">
+    <div class="panel-header">설정</div>
+    <div class="panel-body">
+
+      <div class="field">
+        <label>OS</label>
+        <div class="seg-group" id="os-seg">
+          <button class="active" data-os="ios">iOS</button>
+          <button data-os="android">Android</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>디바이스</label>
+        <div class="auto-row">
+          <select id="device-select"></select>
+          <button class="btn-auto" id="btn-auto-screen" title="이 기기 화면 너비로 자동 설정">📱 내 기기</button>
+          <button class="btn-auto" id="btn-auto-browser" title="현재 브라우저 창 너비로 설정">🖥 브라우저</button>
+        </div>
+        <div id="auto-detected" class="auto-tag" style="display:none"></div>
+      </div>
+
+      <div class="field">
+        <label>화면 방향</label>
+        <div class="seg-group" id="orient-seg">
+          <button class="active" data-orient="portrait">세로</button>
+          <button data-orient="landscape">가로</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>미리보기 버블</label>
+        <div class="seg-group" id="bubble-seg">
+          <button class="active" data-bubble="both">보내기 + 받기</button>
+          <button data-bubble="sent">보내기만</button>
+          <button data-bubble="recv">받기만</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>메시지 입력</label>
+        <textarea id="input-text" placeholder="여기에 텍스트를 입력하세요.
+
+카카오톡에서 어떻게 보일지 오른쪽 미리보기에서 확인할 수 있어요."></textarea>
+        <div class="info-row">
+          <span id="char-count">0자</span>
+          <span id="line-count">0줄</span>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="val" id="m-screen">–</div>
+          <div class="key">화면 너비 (pt)</div>
+        </div>
+        <div class="metric-box">
+          <div class="val" id="m-bubble">–</div>
+          <div class="key">버블 최대 너비 (pt)</div>
+        </div>
+        <div class="metric-box">
+          <div class="val" id="m-textw">–</div>
+          <div class="key">텍스트 영역 (pt)</div>
+        </div>
+        <div class="metric-box">
+          <div class="val" id="m-font">–</div>
+          <div class="key">폰트 크기</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right -->
+  <div class="right-col">
+    <!-- Preview -->
+    <div class="chat-wrap">
+      <div class="chat-bar">
+        <div class="room-name">채팅방</div>
+        <div class="member-count">2</div>
+      </div>
+      <div class="view-toggle">
+        <button class="active" id="vt-rendered">렌더링 미리보기</button>
+        <button id="vt-raw">줄바꿈 표시</button>
+      </div>
+      <div class="chat-viewport" id="chat-viewport">
+        <div class="empty-state">
+          <div class="em">💬</div>
+          <p>텍스트를 입력하면 미리보기가 표시됩니다</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output -->
+    <div class="output-panel">
+      <div class="output-header">
+        <span>줄바꿈 적용 결과</span>
+        <button class="btn btn-copy" id="copy-btn" onclick="copyOutput()">복사</button>
+      </div>
+      <div class="output-text" id="output-text"><span style="color:#bbb">텍스트를 입력하면 결과가 표시됩니다</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden ruler for text measurement -->
+<span id="ruler"></span>
+
+<script>
+// ─── Device & metric config ───────────────────────────────────────────────────
+const DEVICES = {
+  ios: [
+    { name: 'iPhone SE (3세대)',         width: 375 },
+    { name: 'iPhone 14 / 15',            width: 390 },
+    { name: 'iPhone 14 Pro / 15 Pro',    width: 393 },
+    { name: 'iPhone 14 Plus / 15 Plus',  width: 428 },
+    { name: 'iPhone 14 Pro Max / 15 Pro Max', width: 430 },
+    { name: 'iPhone 16',                 width: 393 },
+    { name: 'iPhone 16 Plus',            width: 430 },
+    { name: 'iPhone 16 Pro',             width: 402 },
+    { name: 'iPhone 16 Pro Max',         width: 440 },
+  ],
+  android: [
+    { name: 'Galaxy S24',                width: 360 },
+    { name: 'Galaxy S24+ / S24 Ultra',   width: 412 },
+    { name: 'Galaxy S25',                width: 360 },
+    { name: 'Galaxy S25+ / S25 Ultra',   width: 412 },
+    { name: 'Pixel 8 / 8a',              width: 412 },
+    { name: 'Pixel 8 Pro',               width: 448 },
+    { name: 'Pixel 9',                   width: 412 },
+  ],
+};
+
+// KakaoTalk UI metrics (empirically estimated in logical pixels / points)
+const METRICS = {
+  ios: {
+    bubbleRatio: 0.745,      // bubble max-width / screen width
+    paddingH:    12,         // bubble horizontal padding (each side)
+    fontSize:    15,
+    fontFamily:  '"Apple SD Gothic Neo", -apple-system, BlinkMacSystemFont, sans-serif',
+    fontWeight:  '400',
+  },
+  android: {
+    bubbleRatio: 0.750,
+    paddingH:    12,
+    fontSize:    15,
+    fontFamily:  '"Noto Sans KR", sans-serif',
+    fontWeight:  '400',
+  },
+};
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let state = {
+  os:       'ios',
+  device:   DEVICES.ios[1],   // iPhone 14 default
+  orient:   'portrait',
+  bubble:   'both',
+  view:     'rendered',
+  text:     '',
+};
+
+// ─── DOM refs ─────────────────────────────────────────────────────────────────
+const deviceSelect  = document.getElementById('device-select');
+const inputText     = document.getElementById('input-text');
+const chatViewport  = document.getElementById('chat-viewport');
+const outputText    = document.getElementById('output-text');
+const ruler         = document.getElementById('ruler');
+const charCount     = document.getElementById('char-count');
+const lineCount     = document.getElementById('line-count');
+const mScreen       = document.getElementById('m-screen');
+const mBubble       = document.getElementById('m-bubble');
+const mTextw        = document.getElementById('m-textw');
+const mFont         = document.getElementById('m-font');
+
+// ─── Init devices dropdown ────────────────────────────────────────────────────
+function populateDevices() {
+  deviceSelect.innerHTML = '';
+  DEVICES[state.os].forEach((d, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = d.name;
+    deviceSelect.appendChild(opt);
+  });
+  // default: iPhone 14 for ios, Galaxy S24+ for android
+  deviceSelect.value = state.os === 'ios' ? 1 : 1;
+  state.device = DEVICES[state.os][+deviceSelect.value];
+}
+
+// ─── Text measurement (DOM-based for accuracy) ───────────────────────────────
+const _ruler = document.getElementById('ruler');
+let _rulerMetrics = null;
+
+function setRulerStyle(m) {
+  if (_rulerMetrics === m) return;
+  _ruler.style.fontFamily  = m.fontFamily;
+  _ruler.style.fontSize    = m.fontSize + 'px';
+  _ruler.style.fontWeight  = m.fontWeight;
+  _ruler.style.letterSpacing = '0px';
+  _rulerMetrics = m;
+}
+
+function measureWidth(text, m) {
+  setRulerStyle(m);
+  _ruler.textContent = text;
+  return _ruler.getBoundingClientRect().width;
+}
+
+// 줄 끝에 오면 안 되는 조사/의존명사 패턴
+// 해당 어절이 줄 마지막이 되려 할 때 다음 어절과 함께 다음 줄로 내림
+const PARTICLE_RE = /(는|은|을|를|이|가|의|도|로|으로|와|과|수|것|줄|데|바|만큼|따름|고|며|면|서|니|지|나|랑|이랑|한테|에게|보다|처럼|까지|부터|만|뿐)$/;
+
+function endsWithParticle(word) {
+  // 단어 전체가 조사인 경우 제외 (예: "나", "도" 등 단독 단어)
+  if (word.length <= 1) return false;
+  return PARTICLE_RE.test(word);
+}
+
+// ─── Core: compute lines ──────────────────────────────────────────────────────
+function computeLines(text, maxTextWidth, m) {
+  const result = [];
+  const rawLines = text.split('\n');
+
+  for (const rawLine of rawLines) {
+    if (rawLine === '') {
+      result.push('');
+      continue;
+    }
+
+    const words = rawLine.split(' ');
+    let current = '';
+    let i = 0;
+
+    while (i < words.length) {
+      const word = words[i];
+
+      if (word === '') {
+        current += ' ';
+        i++;
+        continue;
+      }
+
+      const candidate = current === '' ? word : current + ' ' + word;
+
+      if (measureWidth(candidate, m) <= maxTextWidth) {
+        current = candidate;
+        i++;
+      } else {
+        // 줄 넘김 발생 — 현재 줄 마지막 어절이 조사로 끝나는지 확인
+        if (current !== '') {
+          const cWords = current.split(' ').filter(Boolean);
+          const lastW  = cWords[cWords.length - 1];
+
+          if (cWords.length > 1 && endsWithParticle(lastW)) {
+            // 조사 어절을 다음 어절과 함께 다음 줄로 내림
+            const newStart = lastW + ' ' + word;
+            if (measureWidth(newStart, m) <= maxTextWidth) {
+              result.push(cWords.slice(0, -1).join(' '));
+              current = newStart;
+              i++;
+              continue;
+            }
+          }
+          result.push(current);
+        }
+
+        // 어절 자체가 maxWidth보다 길면 글자 단위로 분할
+        if (measureWidth(word, m) > maxTextWidth) {
+          let part = '';
+          for (const ch of word) {
+            const testPart = part + ch;
+            if (measureWidth(testPart, m) > maxTextWidth && part !== '') {
+              result.push(part);
+              part = ch;
+            } else {
+              part = testPart;
+            }
+          }
+          current = part;
+        } else {
+          current = word;
+        }
+        i++;
+      }
+    }
+
+    if (current !== '') result.push(current);
+  }
+  return result;
+}
+
+// ─── Main update ──────────────────────────────────────────────────────────────
+function update() {
+  const m        = METRICS[state.os];
+  const baseWidth = state.customWidth ?? state.device.width;
+  const sw    = state.orient === 'portrait' ? baseWidth
+                                             : Math.round(baseWidth * 1.78);
+  const bw    = Math.round(sw * m.bubbleRatio);
+  const tw    = bw - m.paddingH * 2 - 4;
+
+  // Metrics display
+  mScreen.textContent = sw + 'pt';
+  mBubble.textContent = bw + 'pt';
+  mTextw.textContent  = tw + 'pt';
+  mFont.textContent   = m.fontSize + 'px';
+
+  const text = state.text;
+  charCount.textContent = text.length + '자';
+
+  if (!text.trim()) {
+    chatViewport.innerHTML = `
+      <div class="empty-state">
+        <div class="em">💬</div>
+        <p>텍스트를 입력하면 미리보기가 표시됩니다</p>
+      </div>`;
+    outputText.innerHTML = '<span style="color:#bbb">텍스트를 입력하면 결과가 표시됩니다</span>';
+    lineCount.textContent = '0줄';
+    return;
+  }
+
+  const lines = computeLines(text, tw, m);
+  lineCount.textContent = lines.length + '줄';
+
+  renderChat(lines, m, sw);
+  renderOutput(lines);
+}
+
+// ─── Render chat preview ──────────────────────────────────────────────────────
+function renderChat(lines, m, screenWidth) {
+  chatViewport.innerHTML = '';
+
+  // Scale preview: fit to container. viewport is ~100% - paddings
+  const containerW = chatViewport.clientWidth || 600;
+  const scale      = Math.min(1, (containerW - 24) / screenWidth);
+
+  const joined = lines.join('\n');
+
+  const showSent = state.bubble === 'both' || state.bubble === 'sent';
+  const showRecv = state.bubble === 'both' || state.bubble === 'recv';
+
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+  if (showRecv) {
+    chatViewport.appendChild(buildBubble('recv', joined, timeStr, scale, m, screenWidth));
+  }
+  if (showSent) {
+    chatViewport.appendChild(buildBubble('sent', joined, timeStr, scale, m, screenWidth));
+  }
+}
+
+function buildBubble(type, text, time, scale, m, screenWidth) {
+  const isSent = type === 'sent';
+
+  const row = document.createElement('div');
+  row.className = 'msg-row ' + type;
+  row.style.zoom = scale;
+
+  // Avatar (recv only)
+  if (!isSent) {
+    const av = document.createElement('div');
+    av.className = 'avatar';
+    av.textContent = '👤';
+    row.appendChild(av);
+  }
+
+  const col = document.createElement('div');
+  col.className = 'msg-col';
+  col.style.maxWidth = (screenWidth * METRICS[state.os].bubbleRatio) + 'px';
+
+  if (!isSent) {
+    const name = document.createElement('div');
+    name.className = 'sender-name';
+    name.textContent = '상대방';
+    col.appendChild(name);
+  }
+
+  const brow = document.createElement('div');
+  brow.className = 'bubble-row';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble ' + type;
+  bubble.style.fontFamily = m.fontFamily;
+  bubble.style.fontSize   = m.fontSize + 'px';
+  bubble.style.maxWidth   = (screenWidth * METRICS[state.os].bubbleRatio) + 'px';
+
+  const parts = text.split('\n');
+  parts.forEach((part, i) => {
+    const line = document.createElement('span');
+    line.className = 'bubble-line';
+    if (state.view === 'rendered') {
+      line.textContent = part;
+    } else {
+      line.textContent = part;
+      if (i < parts.length - 1) {
+        const mark = document.createElement('span');
+        mark.className = 'lb-mark';
+        mark.textContent = '↵';
+        line.appendChild(mark);
+      }
+    }
+    bubble.appendChild(line);
+  });
+
+  const meta = document.createElement('div');
+  meta.className = 'bubble-meta';
+  meta.textContent = time;
+
+  if (isSent) {
+    brow.appendChild(meta);
+    brow.appendChild(bubble);
+  } else {
+    brow.appendChild(bubble);
+    brow.appendChild(meta);
+  }
+
+  col.appendChild(brow);
+  row.appendChild(col);
+  return row;
+}
+
+// ─── Render output text ───────────────────────────────────────────────────────
+function renderOutput(lines) {
+  outputText.textContent = lines.join('\n');
+}
+
+// ─── Copy ─────────────────────────────────────────────────────────────────────
+function copyOutput() {
+  const btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(outputText.textContent).then(() => {
+    btn.textContent = '복사됨 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '복사';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ─── Event listeners ──────────────────────────────────────────────────────────
+// OS segment
+document.getElementById('os-seg').addEventListener('click', e => {
+  const btn = e.target.closest('[data-os]');
+  if (!btn) return;
+  document.querySelectorAll('#os-seg button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.os = btn.dataset.os;
+  populateDevices();
+  update();
+});
+
+// Device
+deviceSelect.addEventListener('change', () => {
+  state.device = DEVICES[state.os][+deviceSelect.value];
+  update();
+});
+
+// Orientation
+document.getElementById('orient-seg').addEventListener('click', e => {
+  const btn = e.target.closest('[data-orient]');
+  if (!btn) return;
+  document.querySelectorAll('#orient-seg button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.orient = btn.dataset.orient;
+  update();
+});
+
+// Bubble type
+document.getElementById('bubble-seg').addEventListener('click', e => {
+  const btn = e.target.closest('[data-bubble]');
+  if (!btn) return;
+  document.querySelectorAll('#bubble-seg button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.bubble = btn.dataset.bubble;
+  update();
+});
+
+// View toggle
+document.getElementById('vt-rendered').addEventListener('click', () => {
+  state.view = 'rendered';
+  document.getElementById('vt-rendered').classList.add('active');
+  document.getElementById('vt-raw').classList.remove('active');
+  update();
+});
+document.getElementById('vt-raw').addEventListener('click', () => {
+  state.view = 'raw';
+  document.getElementById('vt-raw').classList.add('active');
+  document.getElementById('vt-rendered').classList.remove('active');
+  update();
+});
+
+// Text input
+inputText.addEventListener('input', () => {
+  state.text = inputText.value;
+  update();
+});
+
+// ─── Auto detect ─────────────────────────────────────────────────────────────
+const autoDetected = document.getElementById('auto-detected');
+const btnAutoScreen  = document.getElementById('btn-auto-screen');
+const btnAutoBrowser = document.getElementById('btn-auto-browser');
+
+function applyCustomWidth(width, label) {
+  // 커스텀 너비를 state에 직접 적용 (프리셋과 무관하게)
+  state.customWidth = width;
+  autoDetected.style.display = 'block';
+  autoDetected.textContent = `감지됨: ${label} → ${width}pt`;
+  update();
+}
+
+function clearCustomWidth() {
+  state.customWidth = null;
+  autoDetected.style.display = 'none';
+}
+
+btnAutoScreen.addEventListener('click', () => {
+  const w = window.screen.width;
+  btnAutoScreen.classList.add('active');
+  btnAutoBrowser.classList.remove('active');
+  applyCustomWidth(w, '내 기기 화면');
+});
+
+btnAutoBrowser.addEventListener('click', () => {
+  const w = window.innerWidth;
+  btnAutoBrowser.classList.add('active');
+  btnAutoScreen.classList.remove('active');
+  applyCustomWidth(w, '브라우저 창');
+});
+
+// 프리셋 선택하면 auto 해제
+deviceSelect.addEventListener('change', () => {
+  clearCustomWidth();
+  btnAutoScreen.classList.remove('active');
+  btnAutoBrowser.classList.remove('active');
+  state.device = DEVICES[state.os][+deviceSelect.value];
+  update();
+});
+
+// 브라우저 리사이즈 시 브라우저 모드면 자동 갱신
+window.addEventListener('resize', () => {
+  if (btnAutoBrowser.classList.contains('active')) {
+    applyCustomWidth(window.innerWidth, '브라우저 창');
+  }
+});
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+populateDevices();
+update();
+</script>
+</body>
+</html>
