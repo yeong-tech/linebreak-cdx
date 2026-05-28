@@ -104,9 +104,8 @@ body {
   padding: 10px 14px;
   font-size: 15px;
   line-height: 1.45;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: pre;        /* 알고리즘 줄바꿈만 적용, CSS wrap 없음 */
+  overflow: hidden;        /* 긴 줄은 클리핑 */
 }
 
 .bubble--sent {
