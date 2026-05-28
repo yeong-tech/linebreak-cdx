@@ -3,392 +3,313 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <title>줄바꿈 도우미 Beta</title>
     <style>
-:root {
-  --color-bg-base: #f4f7fb;
-  --color-bg-panel: #ffffff;
-  --color-border-default: #cfd8e6;
-  --color-text-primary: #1a2433;
-  --color-text-secondary: #4f5f74;
-  --color-accent-primary: #f8e71c;
-  --color-accent-primary-text: #282a30;
-  --color-preview-bg: #bad6e9;
-  --color-bubble-bg: #ffffff;
-  --color-focus-ring: #3168d6;
-  --color-status-idle: #4f5f74;
-  --color-status-success: #0f6b3a;
-  --color-status-warning: #8b5d00;
-  --color-status-error: #a5282f;
-  --type-title-size: 28px;
-  --type-title-weight: 750;
-  --type-section-size: 22px;
-  --type-section-weight: 700;
-  --type-body-size: 15px;
-  --type-body-weight: 450;
-  --type-label-size: 14px;
-  --type-label-weight: 650;
-  --type-caption-size: 13px;
-  --type-caption-weight: 500;
-  --type-button-size: 14px;
-  --type-button-weight: 650;
-  --space-4: 4px;
-  --space-8: 8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-  --radius-10: 10px;
-  --radius-12: 12px;
-  --radius-18: 18px;
-  --radius-32: 32px;
-  --shadow-panel: 0 12px 28px rgba(20,35,62,0.1);
-  --shadow-bubble: 0 2px 10px rgba(31,53,83,0.14);
-  --motion-fast: 120ms;
-  --motion-ease: ease-out;
-}
-* { box-sizing: border-box; }
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
-  color: var(--color-text-primary);
-  background: radial-gradient(circle at 10% 10%, #ffffff 0%, var(--color-bg-base) 38%, #eaf0f8 100%);
-}
-.container {
   min-height: 100vh;
-  padding: var(--space-24);
-  max-width: 1180px;
-  margin: 0 auto;
-}
-.panel {
-  background: var(--color-bg-panel);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-18);
-  box-shadow: var(--shadow-panel);
-  padding: var(--space-20);
+  font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+  background: #F2F2F7;
+  color: #1C1C1E;
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  gap: 20px;
 }
-.type-title { margin: 0; font-size: var(--type-title-size); font-weight: var(--type-title-weight); line-height: 1.3; }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.app-header {
+  text-align: center;
+}
+
+.app-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #1C1C1E;
+}
+
 .beta-badge {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 6px;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  background: #0f7bff;
-  color: #ffffff;
+  background: #007AFF;
+  color: #fff;
   vertical-align: middle;
+  letter-spacing: 0.02em;
 }
-.type-section-title { margin: 0; font-size: var(--type-section-size); font-weight: var(--type-section-weight); line-height: 1.3; }
-.type-body { font-size: var(--type-body-size); font-weight: var(--type-body-weight); line-height: 1.6; }
-.type-label { font-size: var(--type-label-size); font-weight: var(--type-label-weight); }
-.type-caption { font-size: var(--type-caption-size); font-weight: var(--type-caption-weight); }
-.editor-header { display: flex; flex-direction: column; gap: var(--space-8); }
-.sub { margin: 0; color: var(--color-text-secondary); }
-.form-select {
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-12);
-  background: #ffffff;
-  color: var(--color-text-primary);
-  padding: 10px 28px 10px 12px;
-  font-size: var(--type-caption-size);
-  font-family: inherit;
-  font-weight: var(--type-caption-weight);
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%234f5f74' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
+
+.app-sub {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #6E6E73;
 }
-.form-select:focus-visible { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px rgba(49,104,214,0.18); outline: none; }
-.options-row, .actions-row { display: flex; align-items: flex-end; gap: var(--space-12); flex-wrap: wrap; }
-.form-field { display: flex; flex-direction: column; gap: var(--space-8); }
-.checkbox-row {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-8);
-  min-height: 40px;
-  padding: var(--space-8) var(--space-12);
-  border-radius: var(--radius-10);
-  border: 1px solid transparent;
-  color: var(--color-text-primary);
+
+/* ── Phone Frame ─────────────────────────────────────────────────────────── */
+.phone-wrap {
+  width: 100%;
+  max-width: 320px;
 }
-.checkbox-row input { margin: 0; }
-.checkbox-row:has(input:disabled) { opacity: 0.6; }
-.action-button {
-  border-radius: 999px;
-  padding: 10px 16px;
-  border: 1px solid var(--color-border-default);
-  font-size: var(--type-button-size);
-  font-weight: var(--type-button-weight);
-  line-height: 1;
-  cursor: pointer;
-  transform: translateY(0);
-  transition: transform var(--motion-fast) var(--motion-ease),
-    background-color var(--motion-fast) var(--motion-ease),
-    color var(--motion-fast) var(--motion-ease),
-    border-color var(--motion-fast) var(--motion-ease),
-    opacity var(--motion-fast) var(--motion-ease);
-}
-.action-button:focus-visible { outline: 2px solid rgba(49,104,214,0.35); outline-offset: 2px; }
-.action-button--primary { background: var(--color-accent-primary); border-color: #d7c900; color: var(--color-accent-primary-text); }
-.action-button--secondary { background: #ffffff; color: var(--color-text-primary); }
-.action-button--ghost { background: #f5f8fc; color: var(--color-text-secondary); }
-.action-button:hover { transform: translateY(-1px); }
-.action-button:active { transform: translateY(1px); }
-.action-button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-.status { min-height: 20px; margin: 0; }
-.status--idle { color: var(--color-status-idle); }
-.status--success { color: var(--color-status-success); }
-.status--warning { color: var(--color-status-warning); }
-.status--error { color: var(--color-status-error); }
-.emphasis-section {
-  margin-top: var(--space-8);
-  padding: var(--space-12);
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--radius-12);
-  background: linear-gradient(180deg, #f9fbff 0%, #f2f6fc 100%);
-}
-.emphasis-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-8); }
-.emphasis-meta { margin: 0; color: var(--color-text-secondary); }
-.emphasis-label { margin: 0 0 var(--space-4); color: var(--color-text-secondary); }
-.combined-view {
-  margin-top: var(--space-8);
-  display: grid;
-  grid-template-columns: 1fr 220px;
-  gap: var(--space-12);
-  align-items: start;
-}
-.preview-inline {
-  border: 1px solid #dbe4f0;
-  border-radius: var(--radius-12);
-  background: #f7fbff;
-  padding: var(--space-8);
-  position: sticky;
-  top: var(--space-16);
-}
-.preview-inline-title { margin: 0 0 var(--space-8); color: var(--color-text-secondary); }
-.transform-thread {
-  min-height: 180px;
-  max-height: 360px;
-  overflow: auto;
+
+.phone-frame {
+  width: 100%;
+  height: 560px;
+  border: 8px solid #1C1C1E;
+  border-radius: 44px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  padding: var(--space-8);
-  border: 1px solid #dbe4f0;
-  border-radius: var(--radius-12);
-  background: linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+  background: #EFEFF4;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.08);
 }
-.transform-msg {
-  max-width: 88%;
-  padding: 8px 12px;
-  border-radius: 14px;
+
+/* ── Chat Area ───────────────────────────────────────────────────────────── */
+.chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  scroll-behavior: smooth;
+}
+
+.chat-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #AEAEB2;
+  padding-bottom: 12px;
+  transition: opacity 0.2s;
+}
+
+.bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bubble {
+  background: #FFFFFF;
+  border-radius: 18px 18px 18px 5px;
+  padding: 10px 14px;
+  font-size: 15px;
   line-height: 1.45;
+  color: #000000;
   white-space: pre-wrap;
   word-break: keep-all;
   overflow-wrap: break-word;
-  box-shadow: 0 1px 4px rgba(23,36,52,0.08);
+  max-width: 82%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  animation: bubblePop 220ms ease-out;
 }
-.transform-msg--source { align-self: flex-end; background: #1383ff; color: #ffffff; border-bottom-right-radius: 6px; }
-.transform-msg--result { align-self: flex-start; background: #ffffff; color: #18222f; border-top-left-radius: 6px; }
-.transform-msg-label { display: block; margin-bottom: 3px; font-size: 11px; font-weight: 650; opacity: 0.72; }
-.transform-msg--animate { animation: emphasisPulse 420ms var(--motion-ease); }
-.composer-wrap { margin-top: var(--space-12); }
-.device-settings {
-  margin-top: var(--space-12);
-  padding: 10px;
-  border: 1px solid #dbe4f0;
-  border-radius: var(--radius-12);
-  background: #ffffff;
+
+.bubble:empty { display: none; }
+
+@keyframes bubblePop {
+  from { transform: scale(0.96); opacity: 0.6; }
+  to   { transform: scale(1);    opacity: 1; }
 }
-.device-settings-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8); }
-.composer-shell {
+
+/* ── Composer ────────────────────────────────────────────────────────────── */
+.composer {
+  background: #FFFFFF;
+  border-top: 1px solid #C6C6C8;
+  padding: 10px 12px;
   display: flex;
   align-items: flex-end;
-  gap: var(--space-8);
-  padding: 8px 12px;
-  border: 1px solid var(--color-border-default);
-  border-radius: 24px;
-  background: #ffffff;
+  gap: 8px;
 }
+
 .composer-input {
   flex: 1;
-  min-height: 44px;
-  max-height: 120px;
-  border: 0;
-  resize: vertical;
-  padding: 10px 2px;
+  background: #EFEFF4;
+  border: none;
+  border-radius: 18px;
+  padding: 8px 13px;
   font: inherit;
-  font-size: var(--type-body-size);
-  line-height: 1.45;
-  color: var(--color-text-primary);
-  background: transparent;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #1C1C1E;
+  resize: none;
+  overflow-y: auto;
+  min-height: 36px;
+  max-height: 110px;
 }
+
+.composer-input::placeholder { color: #AEAEB2; }
 .composer-input:focus { outline: none; }
-.composer-send {
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 999px;
-  background: #1184ff;
-  color: #fff;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 650;
-  cursor: pointer;
-}
-.phone {
-  margin-top: var(--space-8);
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+.controls {
   width: 100%;
-  aspect-ratio: 9 / 18;
-  border: 6px solid #232a3a;
-  border-radius: var(--radius-32);
-  overflow: hidden;
-  background: #d1e5f3;
-  max-height: 420px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.chat-bg {
-  height: 100%;
-  padding: var(--space-12);
-  background: linear-gradient(180deg, #cde2ef 0%, var(--color-preview-bg) 100%);
-  overflow: auto;
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.bubble {
-  display: inline-block;
-  max-width: 86%;
-  background: var(--color-bubble-bg);
-  border-radius: var(--radius-18);
-  border-top-left-radius: 8px;
-  padding: var(--space-12);
-  white-space: pre;        /* 알고리즘 줄바꿈만 적용, CSS 추가 줄바꿈 없음 */
-  overflow: hidden;
-  line-height: 1.45;
+
+.toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 13px;
-  box-shadow: var(--shadow-bubble);
+  color: #6E6E73;
+  cursor: pointer;
+  user-select: none;
 }
-@keyframes emphasisPulse {
-  0%   { transform: scale(0.985); filter: saturate(0.65); }
-  100% { transform: scale(1);     filter: saturate(1); }
+
+.toggle-label input[type="checkbox"] { cursor: pointer; }
+
+.device-select {
+  border: 1px solid #D1D1D6;
+  border-radius: 8px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24'%3E%3Cpath fill='%236E6E73' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 8px center;
+  padding: 6px 26px 6px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #1C1C1E;
+  cursor: pointer;
+  appearance: none;
 }
-@media (max-width: 560px) {
-  .container { padding: var(--space-12); }
-  .panel { padding: var(--space-16); }
-  .type-title { font-size: 23px; }
-  .type-section-title { font-size: 20px; }
-  .combined-view { grid-template-columns: 1fr; }
-  .preview-inline { position: static; }
-  .phone { max-height: 300px; }
+
+.device-select:disabled { opacity: 0.45; cursor: default; }
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.12s, transform 0.1s;
+}
+
+.btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+.btn:active { opacity: 0.70; transform: translateY(1px); }
+
+.btn-copy  { background: #007AFF; color: #fff; }
+.btn-reset { background: #E5E5EA; color: #3A3A3C; }
+
+/* ── Status ──────────────────────────────────────────────────────────────── */
+.status-line {
+  font-size: 12px;
+  color: #AEAEB2;
+  min-height: 16px;
+  text-align: center;
+}
+
+.status-line.success { color: #34C759; }
+.status-line.warning { color: #FF9500; }
+.status-line.error   { color: #FF3B30; }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-height: 700px) {
+  .phone-frame { height: 460px; }
 }
     </style>
   </head>
   <body>
-    <main id="appRoot" class="container" data-layout="desktop-2col mobile-1col">
-      <section class="panel" data-component="App/Panel" data-variant="default">
-        <header class="editor-header">
-          <h1 class="type-title">줄바꿈 도우미 <span class="beta-badge">BETA</span></h1>
-          <p class="sub type-body">
-            외부에서 작성한 텍스트를 붙여넣고, 카톡에 보내기 전 줄바꿈을 미리 점검하세요.
-          </p>
-        </header>
 
-        <div class="options-row" data-layout="horizontal-wrap">
-          <label class="checkbox-row type-caption" data-component="Form/CheckboxRow">
-            <input id="sentenceMode" type="checkbox" />
-            <span>한 문장씩 줄바꿈</span>
-          </label>
-          <label class="checkbox-row type-caption" data-component="Form/CheckboxRow">
-            <input id="keepBlankLines" type="checkbox" checked />
-            <span>빈 줄(문단) 유지</span>
-          </label>
+    <header class="app-header">
+      <h1 class="app-title">줄바꿈 도우미 <span class="beta-badge">BETA</span></h1>
+      <p class="app-sub">입력하면 보정된 줄바꿈을 실시간으로 미리보세요</p>
+    </header>
+
+    <div class="phone-wrap">
+      <div class="phone-frame">
+
+        <div class="chat-area" id="chatArea">
+          <p class="chat-hint" id="chatHint">메시지를 아래에 입력하세요</p>
+          <div class="bubble-wrap">
+            <div class="bubble" id="bubble"></div>
+          </div>
         </div>
 
-        <div class="actions-row" data-layout="horizontal-wrap">
-          <button id="normalizeBtn" class="action-button action-button--primary" type="button">자동 줄바꿈 보정</button>
-          <button id="copyBtn"      class="action-button action-button--secondary" type="button">결과 복사</button>
-          <button id="resetBtn"     class="action-button action-button--ghost" type="button">초기화</button>
+        <div class="composer">
+          <textarea
+            id="inputText"
+            class="composer-input"
+            placeholder="메시지를 입력하세요..."
+            rows="1"
+            spellcheck="false"
+          ></textarea>
         </div>
 
-        <p id="status" class="status status--idle type-caption" role="status" aria-live="polite"></p>
+      </div>
+    </div>
 
-        <section id="emphasisSection" class="emphasis-section" aria-labelledby="emphasisTitle">
-          <div class="emphasis-head">
-            <h2 id="emphasisTitle" class="type-section-title">변환 채팅</h2>
-            <p id="emphasisMeta" class="type-caption emphasis-meta"></p>
-          </div>
-          <div class="combined-view">
-            <div id="transformThread" class="transform-thread" aria-live="polite"></div>
-            <div class="preview-inline">
-              <h3 class="type-caption preview-inline-title">카톡 미리보기</h3>
-              <div id="phoneFrame" class="phone">
-                <div class="chat-bg">
-                  <div id="bubble" class="bubble bubble--single-line"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div class="controls">
+      <div class="ctrl-row">
+        <label class="toggle-label">
+          <input id="sentenceMode" type="checkbox" />
+          <span>한 문장씩 줄바꿈</span>
+        </label>
+        <label class="toggle-label">
+          <input id="keepBlankLines" type="checkbox" checked />
+          <span>빈 줄 유지</span>
+        </label>
+      </div>
+      <div class="ctrl-row">
+        <label class="toggle-label">
+          <input id="autoDeviceMode" type="checkbox" checked />
+          <span>기기 자동 감지</span>
+        </label>
+        <select id="deviceSelect" class="device-select" disabled>
+          <optgroup label="iOS">
+            <option value="iphone_se">iPhone SE</option>
+            <option value="iphone_standard" selected>iPhone 14 / 15 / 16</option>
+            <option value="iphone_pro_max">iPhone Pro Max</option>
+          </optgroup>
+          <optgroup label="Android">
+            <option value="galaxy_standard">Galaxy S</option>
+            <option value="galaxy_ultra">Galaxy Ultra / +</option>
+            <option value="galaxy_fold_open">Galaxy Z Fold (펼침)</option>
+            <option value="galaxy_fold_closed">Galaxy Z Fold (접힘)</option>
+          </optgroup>
+          <optgroup label="Universal">
+            <option value="universal">🌐 Universal</option>
+          </optgroup>
+        </select>
+        <div class="actions">
+          <button id="copyBtn"  class="btn btn-copy">복사</button>
+          <button id="resetBtn" class="btn btn-reset">초기화</button>
+        </div>
+      </div>
+    </div>
 
-          <div id="outputSection" class="composer-wrap">
-            <p class="type-caption emphasis-label">입력</p>
-            <div class="composer-shell">
-              <textarea
-                id="inputText"
-                class="composer-input"
-                placeholder="메시지를 입력하세요"
-                spellcheck="false"
-              ></textarea>
-              <button id="composerApplyBtn" type="button" class="composer-send">보정</button>
-            </div>
-          </div>
-
-          <div class="device-settings">
-            <div class="device-settings-head">
-              <p class="type-caption emphasis-label">기기 설정 (자동 우선)</p>
-              <label class="checkbox-row type-caption">
-                <input id="autoDeviceMode" type="checkbox" checked />
-                <span>자동 감지</span>
-              </label>
-            </div>
-            <label class="form-field type-caption">
-              기기 수동 선택
-              <select id="deviceSelect" class="form-select">
-                <optgroup label="iOS">
-                  <option value="iphone_se">iPhone SE</option>
-                  <option value="iphone_standard" selected>iPhone 14 / 15 / 16</option>
-                  <option value="iphone_pro_max">iPhone Pro Max</option>
-                </optgroup>
-                <optgroup label="Android">
-                  <option value="galaxy_standard">Galaxy S (표준 360dp)</option>
-                  <option value="galaxy_ultra">Galaxy S Ultra / +</option>
-                  <option value="galaxy_fold_open">Galaxy Z Fold (펼침)</option>
-                  <option value="galaxy_fold_closed">Galaxy Z Fold (접힘) ⚠️</option>
-                </optgroup>
-                <optgroup label="Universal">
-                  <option value="universal">🌐 Universal — 모든 기기 동일</option>
-                </optgroup>
-              </select>
-            </label>
-          </div>
-        </section>
-      </section>
-    </main>
+    <p id="statusLine" class="status-line" role="status" aria-live="polite"></p>
 
     <script>
 // ── 디바이스 DB ──────────────────────────────────────────────────────────────
 var DEVICES = {
-  iphone_standard:  { label: 'iPhone 일반',           maxUnits: 42 },
-  iphone_pro_max:   { label: 'iPhone Pro Max',         maxUnits: 46 },
-  iphone_se:        { label: 'iPhone SE',              maxUnits: 40 },
-  galaxy_standard:  { label: 'Galaxy 표준',            maxUnits: 34 },
-  galaxy_ultra:     { label: 'Galaxy Ultra/+',         maxUnits: 40 },
-  galaxy_fold_open: { label: 'Galaxy Z Fold (펼침)',   maxUnits: 85 },
-  galaxy_fold_closed:{ label: 'Galaxy Z Fold (접힘)', maxUnits: 32 },
+  iphone_standard:   { label: 'iPhone 일반',           maxUnits: 42 },
+  iphone_pro_max:    { label: 'iPhone Pro Max',         maxUnits: 46 },
+  iphone_se:         { label: 'iPhone SE',              maxUnits: 40 },
+  galaxy_standard:   { label: 'Galaxy 표준',            maxUnits: 34 },
+  galaxy_ultra:      { label: 'Galaxy Ultra/+',         maxUnits: 40 },
+  galaxy_fold_open:  { label: 'Galaxy Z Fold (펼침)',   maxUnits: 85 },
+  galaxy_fold_closed:{ label: 'Galaxy Z Fold (접힘)',   maxUnits: 32 },
 };
 var DEFAULT_DEVICE = 'iphone_standard';
 
@@ -424,7 +345,6 @@ function isForbiddenLineEnd(word) {
 }
 
 // ── 리스트 마커 감지 ─────────────────────────────────────────────────────────
-// 1.  2.  1-  2-  첫번째,  두번째,  첫째,  둘째, ... 등은 새 줄 시작 신호
 var LIST_MARKER_RE = /^([1-9]\d?[.\-]|첫번째[,，]?|두번째[,，]?|세번째[,，]?|네번째[,，]?|다섯번째[,，]?|여섯번째[,，]?|일곱번째[,，]?|여덟번째[,，]?|아홉번째[,，]?|열번째[,，]?|첫째[,，]?|둘째[,，]?|셋째[,，]?|넷째[,，]?|다섯째[,，]?|여섯째[,，]?|일곱째[,，]?|여덟째[,，]?|아홉째[,，]?|열째[,，]?)$/;
 
 function isListMarker(word) {
@@ -463,13 +383,13 @@ function computeLines(paragraph, maxUnits) {
   var words = paragraph.split(' ').filter(Boolean);
   var lines = [];
   var current = '', currentUnits = 0, i = 0;
-  var commaAnchor  = null; // 쉼표가 줄 중간 이후 위치 기록
+  var commaAnchor = null;
 
   while (i < words.length) {
     var word = words[i];
     var wordUnits = countUnits(word);
 
-    // 리스트 마커(1. 2. 1- 첫번째, 둘째, 등)가 오면 현재 줄 먼저 flush
+    // 리스트 마커가 오면 현재 줄 먼저 flush
     if (current !== '' && isListMarker(word)) {
       lines.push(current);
       current = ''; currentUnits = 0; commaAnchor = null;
@@ -482,7 +402,7 @@ function computeLines(paragraph, maxUnits) {
       current = current === '' ? word : current + ' ' + word;
       currentUnits = candidateUnits;
       var half = maxUnits / 2;
-      // 마침표·느낌표·물음표·접속조사(와/과)로 끝나는 어절이 줄 중간을 넘으면 즉시 줄바꿈
+      // 마침표·느낌표·물음표·접속조사(와/과) → 50% 초과 시 즉시 줄바꿈
       if ((/[.!?。？！]["')\]]*$/.test(word) || /[와과]$/.test(word)) && currentUnits > half) {
         lines.push(current);
         current = ''; currentUnits = 0; commaAnchor = null;
@@ -492,7 +412,6 @@ function computeLines(paragraph, maxUnits) {
       i++;
     } else {
       if (current !== '') {
-        // 쉼표 앵커가 있으면 거기서 먼저 자름
         if (commaAnchor) {
           lines.push(commaAnchor.text);
           i = commaAnchor.nextIdx;
@@ -503,7 +422,6 @@ function computeLines(paragraph, maxUnits) {
         var lastW  = cWords[cWords.length - 1];
         if (cWords.length > 1 && (endsWithParticle(lastW) || isForbiddenLineEnd(lastW))) {
           var newLastW = cWords.length > 2 ? cWords[cWords.length - 2] : '';
-          // 당기면 직전 어절이 금지 어절이 되는 경우엔 당기지 않음 (연쇄 방지)
           if (!isForbiddenLineEnd(newLastW)) {
             var nextUnits = countUnits(lastW) + 1 + wordUnits;
             if (nextUnits <= maxUnits) {
@@ -546,7 +464,6 @@ function normalizeText(text, options) {
   var device = (options.device && options.device in DEVICES) ? options.device : DEFAULT_DEVICE;
   var sentenceMode        = !!options.sentenceMode;
   var keepParagraphBreaks = options.keepParagraphBreaks !== false;
-
   var maxUnits   = DEVICES[device].maxUnits;
   var paragraphs = splitParagraphs(text, keepParagraphBreaks);
   if (paragraphs.length === 0) return '';
@@ -565,47 +482,21 @@ function normalizeText(text, options) {
   return keepParagraphBreaks ? wrapped.join('\n\n') : wrapped.join('\n');
 }
 
-function buildBubbleLines(text, device) {
-  device = (device && device in DEVICES) ? device : DEFAULT_DEVICE;
-  if (!text || text.trim() === '') return [];
-  var maxUnits = DEVICES[device].maxUnits;
-  var lines = normalizeLineBreaks(text).split('\n');
-  var result = [];
-  for (var line of lines) {
-    if (line.trim() === '') result.push('');
-    else result.push.apply(result, computeLines(line, maxUnits));
-  }
-  return result;
-}
-
 // ── UI ────────────────────────────────────────────────────────────────────────
-var inputText        = document.getElementById('inputText');
-var bubble           = document.getElementById('bubble');
-var phoneFrame       = document.getElementById('phoneFrame');
-var appRoot          = document.getElementById('appRoot');
-var deviceSelect     = document.getElementById('deviceSelect');
-var autoDeviceMode   = document.getElementById('autoDeviceMode');
-var sentenceModeEl   = document.getElementById('sentenceMode');
-var keepBlankLines   = document.getElementById('keepBlankLines');
-var normalizeBtn     = document.getElementById('normalizeBtn');
-var copyBtn          = document.getElementById('copyBtn');
-var resetBtn         = document.getElementById('resetBtn');
-var composerApplyBtn = document.getElementById('composerApplyBtn');
-var status           = document.getElementById('status');
-var transformThread  = document.getElementById('transformThread');
-var emphasisMeta     = document.getElementById('emphasisMeta');
+var inputText     = document.getElementById('inputText');
+var bubble        = document.getElementById('bubble');
+var chatArea      = document.getElementById('chatArea');
+var chatHint      = document.getElementById('chatHint');
+var deviceSelect  = document.getElementById('deviceSelect');
+var autoDeviceMode= document.getElementById('autoDeviceMode');
+var sentenceModeEl= document.getElementById('sentenceMode');
+var keepBlankLines= document.getElementById('keepBlankLines');
+var copyBtn       = document.getElementById('copyBtn');
+var resetBtn      = document.getElementById('resetBtn');
+var statusLine    = document.getElementById('statusLine');
 
-var latestResult   = '';
-var transformCount = 0;
-var animationId    = 0;
-
-function setStatus(message, tone) {
-  tone = tone || 'idle';
-  var allowed = ['idle', 'success', 'warning', 'error'];
-  var nextTone = allowed.indexOf(tone) >= 0 ? tone : 'idle';
-  status.className = 'status status--' + nextTone + ' type-caption';
-  status.textContent = message;
-}
+var latestResult  = '';
+var debounceTimer = null;
 
 var UNIVERSAL_DEVICE = 'galaxy_standard';
 
@@ -618,175 +509,106 @@ function getDeviceKey() {
   return val === 'universal' ? UNIVERSAL_DEVICE : (val in DEVICES ? val : DEFAULT_DEVICE);
 }
 
-function updateBubbleVariant(lines) {
-  var longest = lines.reduce(function(m, l){ return Math.max(m, l.length); }, 0);
-  bubble.classList.remove('bubble--single-line', 'bubble--multi-line', 'bubble--long-line');
-  if (lines.length <= 1)   { bubble.classList.add('bubble--single-line'); return; }
-  if (longest >= 42)       { bubble.classList.add('bubble--long-line');   return; }
-  bubble.classList.add('bubble--multi-line');
+function setStatus(msg, tone) {
+  statusLine.textContent = msg;
+  statusLine.className = 'status-line' + (tone ? ' ' + tone : '');
 }
 
-function updatePreview(content) {
-  if (!content) { bubble.textContent = ''; bubble.classList.remove('bubble--single-line','bubble--multi-line','bubble--long-line'); return; }
-  var lines = buildBubbleLines(content, getDeviceKey());
-  bubble.textContent = lines.join('\n');
-  updateBubbleVariant(lines);
-}
-
-function createMsg(label, text, type) {
-  var msg    = document.createElement('div');
-  msg.className = 'transform-msg transform-msg--' + type + ' transform-msg--animate';
-  var lEl = document.createElement('span');
-  lEl.className = 'transform-msg-label';
-  lEl.textContent = label;
-  var bEl = document.createElement('span');
-  bEl.textContent = text || '·';
-  msg.appendChild(lEl);
-  msg.appendChild(bEl);
-  return msg;
-}
-
-function updateThreadMeta(turn, src, res) {
-  var delta = (res ? res.split('\n').length : 0) - (src ? src.split('\n').length : 0);
-  emphasisMeta.textContent = '총 ' + turn + '회 보정 · 줄 수 변화 ' + (delta > 0 ? '+' + delta : delta);
-}
-
-function runNormalize(animated) {
-  animated = animated !== false;
+function updateBubble() {
   var source = inputText.value;
+  if (!source.trim()) {
+    bubble.textContent = '';
+    chatHint.style.display = '';
+    latestResult = '';
+    return;
+  }
   var result = normalizeText(source, {
     device:              getDeviceKey(),
     sentenceMode:        sentenceModeEl.checked,
     keepParagraphBreaks: keepBlankLines.checked,
   });
-  var srcNorm = normalizeLineBreaks(source).trim();
-  var resNorm = normalizeLineBreaks(result).trim();
+  latestResult = normalizeLineBreaks(result).trim();
+  bubble.textContent = latestResult;
+  chatHint.style.display = 'none';
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
 
-  transformCount += 1;
-  var turn = transformCount;
-
-  transformThread.appendChild(createMsg(turn + '. 원문', srcNorm, 'source'));
-
-  if (!animated) {
-    latestResult = resNorm;
-    updatePreview(resNorm);
-    transformThread.appendChild(createMsg(turn + '. 보정', resNorm, 'result'));
-    updateThreadMeta(turn, srcNorm, resNorm);
-    setStatus('줄바꿈 보정을 완료했습니다.', 'success');
-    return;
-  }
-
-  var myId    = ++animationId;
-  var resultMsg = createMsg(turn + '. 보정 중', '', 'result');
-  var bodyEl    = resultMsg.querySelector('span:last-child');
-  var labelEl   = resultMsg.querySelector('.transform-msg-label');
-  transformThread.appendChild(resultMsg);
-  transformThread.scrollTop = transformThread.scrollHeight;
-  setStatus('줄바꿈 보정 중...', 'idle');
-
-  var typed = '', charIdx = 0;
-  var chars = [...(resNorm || '·')];
-
-  function typeNext() {
-    if (myId !== animationId) {
-      labelEl.textContent = turn + '. 보정';
-      bodyEl.textContent  = resNorm || '·';
-      return;
-    }
-    if (charIdx < chars.length) {
-      typed += chars[charIdx++];
-      bodyEl.textContent = typed;
-      updatePreview(typed);
-      transformThread.scrollTop = transformThread.scrollHeight;
-      setTimeout(typeNext, 32);
-    } else {
-      labelEl.textContent = turn + '. 보정';
-      latestResult = resNorm;
-      updatePreview(resNorm);
-      updateThreadMeta(turn, srcNorm, resNorm);
-      setStatus('줄바꿈 보정을 완료했습니다.', 'success');
-    }
-  }
-  setTimeout(typeNext, 180);
+function autoResize() {
+  inputText.style.height = 'auto';
+  inputText.style.height = Math.min(inputText.scrollHeight, 110) + 'px';
 }
 
 function copyToClipboard() {
-  var value = latestResult.trim();
-  if (!value) { setStatus('복사할 텍스트가 없습니다.', 'warning'); return; }
+  if (!latestResult) { setStatus('복사할 내용이 없습니다.', 'warning'); return; }
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(value)
+    navigator.clipboard.writeText(latestResult)
       .then(function(){ setStatus('클립보드에 복사했습니다.', 'success'); })
-      .catch(function(){ fallbackCopy(value); });
+      .catch(function(){ fallbackCopy(); });
   } else {
-    fallbackCopy(value);
+    fallbackCopy();
   }
 }
 
-function fallbackCopy(value) {
+function fallbackCopy() {
   var ta = document.createElement('textarea');
-  ta.value = value;
-  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+  ta.value = latestResult;
+  ta.style.cssText = 'position:fixed;opacity:0;';
   document.body.appendChild(ta);
   ta.select();
-  try {
-    document.execCommand('copy');
-    setStatus('클립보드에 복사했습니다.', 'success');
-  } catch(e) {
-    setStatus('복사에 실패했습니다.', 'error');
-  }
+  try { document.execCommand('copy'); setStatus('클립보드에 복사했습니다.', 'success'); }
+  catch(e) { setStatus('복사에 실패했습니다.', 'error'); }
   document.body.removeChild(ta);
 }
 
 function resetAll() {
-  animationId++;
   inputText.value = '';
+  autoResize();
+  bubble.textContent = '';
+  chatHint.style.display = '';
   latestResult = '';
-  transformCount = 0;
-  transformThread.innerHTML = '';
-  emphasisMeta.textContent = '보정 기록 없음';
-  updatePreview('');
-  setStatus('초기화했습니다.', 'idle');
+  setStatus('초기화했습니다.', '');
 }
 
-function boot() {
-  inputText.value = '';
-  transformThread.innerHTML = '';
-  emphasisMeta.textContent = '보정 기록 없음';
+function scheduleUpdate() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(updateBubble, 120);
+}
+
+// ── 이벤트 바인딩 ────────────────────────────────────────────────────────────
+inputText.addEventListener('input', function() {
+  autoResize();
+  scheduleUpdate();
+});
+
+inputText.addEventListener('keydown', function(e) {
+  // Cmd/Ctrl+Enter → 즉시 복사
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    copyToClipboard();
+  }
+});
+
+copyBtn.addEventListener('click', copyToClipboard);
+resetBtn.addEventListener('click', resetAll);
+
+autoDeviceMode.addEventListener('change', function() {
   deviceSelect.disabled = autoDeviceMode.checked;
-  updatePreview('');
-  setStatus('텍스트를 입력하고 보정 버튼을 눌러 시작하세요.', 'idle');
+  updateBubble();
+});
 
-  normalizeBtn.addEventListener('click',     function(){ runNormalize(true); });
-  composerApplyBtn.addEventListener('click', function(){ runNormalize(true); });
-  copyBtn.addEventListener('click',  copyToClipboard);
-  resetBtn.addEventListener('click', resetAll);
+deviceSelect.addEventListener('change', function() {
+  if (!autoDeviceMode.checked) updateBubble();
+});
 
-  inputText.addEventListener('input', function(){
-    setStatus('입력이 변경되었습니다. 보정 버튼을 눌러 반영해 주세요.', 'warning');
-  });
-  inputText.addEventListener('keydown', function(e){
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runNormalize(true); }
-  });
+sentenceModeEl.addEventListener('change', updateBubble);
+keepBlankLines.addEventListener('change', updateBubble);
 
-  autoDeviceMode.addEventListener('change', function(){
-    deviceSelect.disabled = autoDeviceMode.checked;
-    if (latestResult) updatePreview(latestResult);
-    setStatus(autoDeviceMode.checked ? '자동 기기 감지를 사용합니다.' : '수동 기기 선택 모드입니다.', 'idle');
-  });
-  deviceSelect.addEventListener('change', function(){
-    if (autoDeviceMode.checked) return;
-    if (latestResult) updatePreview(latestResult);
-    setStatus('기기가 변경되었습니다. 보정 버튼을 눌러 반영해 주세요.', 'warning');
-  });
-  sentenceModeEl.addEventListener('change', function(){
-    setStatus('옵션이 변경되었습니다. 보정 버튼을 눌러 반영해 주세요.', 'warning');
-  });
-  keepBlankLines.addEventListener('change', function(){
-    setStatus('옵션이 변경되었습니다. 보정 버튼을 눌러 반영해 주세요.', 'warning');
-  });
-}
-
-boot();
+// ── 초기화 ────────────────────────────────────────────────────────────────────
+(function boot() {
+  inputText.value = '';
+  autoResize();
+  deviceSelect.disabled = autoDeviceMode.checked;
+})();
     </script>
   </body>
 </html>
