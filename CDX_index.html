@@ -423,7 +423,8 @@ function computeLines(paragraph, maxUnits) {
   var words = paragraph.split(' ').filter(Boolean);
   var lines = [];
   var current = '', currentUnits = 0, i = 0;
-  var commaAnchor = null;
+  var commaAnchor    = null;
+  var particleAnchor = null; // 조사 어절 직전 상태 — pull 실패 시 대안 cut point
 
   while (i < words.length) {
     var word = words[i];
@@ -431,29 +432,34 @@ function computeLines(paragraph, maxUnits) {
 
     if (current !== '' && isListMarker(word)) {
       lines.push(current);
-      current = ''; currentUnits = 0; commaAnchor = null;
+      current = ''; currentUnits = 0; commaAnchor = null; particleAnchor = null;
     }
 
     var spaceUnits = current === '' ? 0 : 1;
     var candidateUnits = currentUnits + spaceUnits + wordUnits;
 
     if (candidateUnits <= maxUnits) {
+      // 조사로 끝나는 어절 추가 직전 → pull 실패 대비 앵커 기록
+      if (current !== '' && endsWithParticle(word)) {
+        particleAnchor = { text: current, nextIdx: i };
+      }
       current = current === '' ? word : current + ' ' + word;
       currentUnits = candidateUnits;
       var half = maxUnits / 2;
       if ((/[.!?。？！]["')\]]*$/.test(word) || /[와과]$/.test(word)) && currentUnits > half) {
         lines.push(current);
-        current = ''; currentUnits = 0; commaAnchor = null;
+        current = ''; currentUnits = 0; commaAnchor = null; particleAnchor = null;
       } else if (/[,，]$/.test(word) && currentUnits > half) {
         commaAnchor = { text: current, nextIdx: i + 1 };
       }
       i++;
     } else {
       if (current !== '') {
+        // 1순위: 쉼표 앵커
         if (commaAnchor) {
           lines.push(commaAnchor.text);
           i = commaAnchor.nextIdx;
-          current = ''; currentUnits = 0; commaAnchor = null;
+          current = ''; currentUnits = 0; commaAnchor = null; particleAnchor = null;
           continue;
         }
         var cWords = current.split(' ').filter(Boolean);
@@ -463,18 +469,30 @@ function computeLines(paragraph, maxUnits) {
           if (!isForbiddenLineEnd(newLastW)) {
             var nextUnits = countUnits(lastW) + 1 + wordUnits;
             if (nextUnits <= maxUnits) {
+              // 2순위: pull 성공
               lines.push(cWords.slice(0, -1).join(' '));
               current = lastW + ' ' + word;
               currentUnits = nextUnits;
-              commaAnchor = null;
+              commaAnchor = null; particleAnchor = null;
               i++;
+              continue;
+            }
+          }
+          // 3순위: pull 실패 → 파티클 앵커에서 자르기
+          if (particleAnchor) {
+            var anchorWords = particleAnchor.text.split(' ');
+            var anchorLast  = anchorWords[anchorWords.length - 1];
+            if (!endsWithParticle(anchorLast) && !isForbiddenLineEnd(anchorLast)) {
+              lines.push(particleAnchor.text);
+              i = particleAnchor.nextIdx;
+              current = ''; currentUnits = 0; commaAnchor = null; particleAnchor = null;
               continue;
             }
           }
         }
         lines.push(current);
       }
-      commaAnchor = null;
+      commaAnchor = null; particleAnchor = null;
       if (wordUnits > maxUnits) {
         var chunk = '', chunkUnits = 0;
         for (var ch of [...word]) {
