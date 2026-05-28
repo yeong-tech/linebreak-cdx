@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>줄바꿈 도우미 Beta</title>
     <style>
-/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+/* ── Reset ───────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -22,15 +22,12 @@ body {
 }
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
-.app-header {
-  text-align: center;
-}
+.app-header { text-align: center; }
 
 .app-title {
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: #1C1C1E;
 }
 
 .beta-badge {
@@ -43,7 +40,6 @@ body {
   background: #007AFF;
   color: #fff;
   vertical-align: middle;
-  letter-spacing: 0.02em;
 }
 
 .app-sub {
@@ -53,10 +49,7 @@ body {
 }
 
 /* ── Phone Frame ─────────────────────────────────────────────────────────── */
-.phone-wrap {
-  width: 100%;
-  max-width: 320px;
-}
+.phone-wrap { width: 100%; max-width: 320px; }
 
 .phone-frame {
   width: 100%;
@@ -67,54 +60,91 @@ body {
   display: flex;
   flex-direction: column;
   background: #EFEFF4;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(255,255,255,0.06);
 }
 
 /* ── Chat Area ───────────────────────────────────────────────────────────── */
 .chat-area {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 14px 12px;
+  padding: 16px 12px 8px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  scroll-behavior: smooth;
+  gap: 4px;
 }
 
 .chat-hint {
-  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
   color: #AEAEB2;
-  padding-bottom: 12px;
-  transition: opacity 0.2s;
+  text-align: center;
+  padding: 0 24px;
+  line-height: 1.5;
 }
 
-.bubble-wrap {
+/* ── Message Rows ────────────────────────────────────────────────────────── */
+.msg-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  animation: msgPop 200ms ease-out;
+}
+.msg-row--sent     { justify-content: flex-end; }
+.msg-row--received { justify-content: flex-start; }
+
+@keyframes msgPop {
+  from { transform: scale(0.94) translateY(4px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);   opacity: 1; }
 }
 
+/* ── Bubbles ─────────────────────────────────────────────────────────────── */
 .bubble {
-  background: #FFFFFF;
-  border-radius: 18px 18px 18px 5px;
+  max-width: 75%;
   padding: 10px 14px;
   font-size: 15px;
   line-height: 1.45;
-  color: #000000;
-  white-space: pre-wrap;
   word-break: keep-all;
   overflow-wrap: break-word;
-  max-width: 82%;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
-  animation: bubblePop 220ms ease-out;
+  white-space: pre-wrap;
 }
 
-.bubble:empty { display: none; }
+.bubble--sent {
+  background: #007AFF;
+  color: #fff;
+  border-radius: 18px 18px 5px 18px;
+}
 
-@keyframes bubblePop {
-  from { transform: scale(0.96); opacity: 0.6; }
-  to   { transform: scale(1);    opacity: 1; }
+.bubble--received {
+  background: #FFFFFF;
+  color: #000;
+  border-radius: 18px 18px 18px 5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+/* ── Typing Indicator ────────────────────────────────────────────────────── */
+.typing-indicator {
+  background: #E5E5EA;
+  border-radius: 18px 18px 18px 5px;
+  padding: 12px 16px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.typing-indicator span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8E8E93;
+  animation: typingBounce 1s infinite ease-in-out;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.30s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0);   opacity: 0.5; }
+  30%           { transform: translateY(-5px); opacity: 1;   }
 }
 
 /* ── Composer ────────────────────────────────────────────────────────────── */
@@ -142,9 +172,28 @@ body {
   min-height: 36px;
   max-height: 110px;
 }
-
 .composer-input::placeholder { color: #AEAEB2; }
 .composer-input:focus { outline: none; }
+
+.send-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #007AFF;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.12s, transform 0.1s;
+}
+.send-btn:hover  { opacity: 0.85; transform: scale(1.06); }
+.send-btn:active { opacity: 0.70; transform: scale(0.94); }
+.send-btn:disabled { opacity: 0.35; cursor: default; transform: none; }
+
+.send-btn svg { display: block; }
 
 /* ── Controls ────────────────────────────────────────────────────────────── */
 .controls {
@@ -172,8 +221,6 @@ body {
   user-select: none;
 }
 
-.toggle-label input[type="checkbox"] { cursor: pointer; }
-
 .device-select {
   border: 1px solid #D1D1D6;
   border-radius: 8px;
@@ -185,14 +232,9 @@ body {
   cursor: pointer;
   appearance: none;
 }
-
 .device-select:disabled { opacity: 0.45; cursor: default; }
 
-.actions {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-}
+.actions { display: flex; gap: 8px; margin-left: auto; }
 
 .btn {
   border: none;
@@ -204,10 +246,8 @@ body {
   cursor: pointer;
   transition: opacity 0.12s, transform 0.1s;
 }
-
 .btn:hover  { opacity: 0.85; transform: translateY(-1px); }
 .btn:active { opacity: 0.70; transform: translateY(1px); }
-
 .btn-copy  { background: #007AFF; color: #fff; }
 .btn-reset { background: #E5E5EA; color: #3A3A3C; }
 
@@ -218,12 +258,10 @@ body {
   min-height: 16px;
   text-align: center;
 }
-
 .status-line.success { color: #34C759; }
 .status-line.warning { color: #FF9500; }
 .status-line.error   { color: #FF3B30; }
 
-/* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-height: 700px) {
   .phone-frame { height: 460px; }
 }
@@ -233,17 +271,14 @@ body {
 
     <header class="app-header">
       <h1 class="app-title">줄바꿈 도우미 <span class="beta-badge">BETA</span></h1>
-      <p class="app-sub">입력하면 보정된 줄바꿈을 실시간으로 미리보세요</p>
+      <p class="app-sub">메시지를 보내면 보정본이 말풍선으로 돌아옵니다</p>
     </header>
 
     <div class="phone-wrap">
       <div class="phone-frame">
 
         <div class="chat-area" id="chatArea">
-          <p class="chat-hint" id="chatHint">메시지를 아래에 입력하세요</p>
-          <div class="bubble-wrap">
-            <div class="bubble" id="bubble"></div>
-          </div>
+          <div class="chat-hint" id="chatHint">메시지를 입력하고<br>전송하면 보정된 줄바꿈을<br>말풍선으로 확인할 수 있어요</div>
         </div>
 
         <div class="composer">
@@ -254,6 +289,11 @@ body {
             rows="1"
             spellcheck="false"
           ></textarea>
+          <button id="sendBtn" class="send-btn" type="button" aria-label="전송">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 13V3M3 8l5-5 5 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
 
       </div>
@@ -389,7 +429,6 @@ function computeLines(paragraph, maxUnits) {
     var word = words[i];
     var wordUnits = countUnits(word);
 
-    // 리스트 마커가 오면 현재 줄 먼저 flush
     if (current !== '' && isListMarker(word)) {
       lines.push(current);
       current = ''; currentUnits = 0; commaAnchor = null;
@@ -402,7 +441,6 @@ function computeLines(paragraph, maxUnits) {
       current = current === '' ? word : current + ' ' + word;
       currentUnits = candidateUnits;
       var half = maxUnits / 2;
-      // 마침표·느낌표·물음표·접속조사(와/과) → 50% 초과 시 즉시 줄바꿈
       if ((/[.!?。？！]["')\]]*$/.test(word) || /[와과]$/.test(word)) && currentUnits > half) {
         lines.push(current);
         current = ''; currentUnits = 0; commaAnchor = null;
@@ -483,21 +521,20 @@ function normalizeText(text, options) {
 }
 
 // ── UI ────────────────────────────────────────────────────────────────────────
-var inputText     = document.getElementById('inputText');
-var bubble        = document.getElementById('bubble');
-var chatArea      = document.getElementById('chatArea');
-var chatHint      = document.getElementById('chatHint');
-var deviceSelect  = document.getElementById('deviceSelect');
-var autoDeviceMode= document.getElementById('autoDeviceMode');
-var sentenceModeEl= document.getElementById('sentenceMode');
-var keepBlankLines= document.getElementById('keepBlankLines');
-var copyBtn       = document.getElementById('copyBtn');
-var resetBtn      = document.getElementById('resetBtn');
-var statusLine    = document.getElementById('statusLine');
+var inputText      = document.getElementById('inputText');
+var chatArea       = document.getElementById('chatArea');
+var chatHint       = document.getElementById('chatHint');
+var sendBtn        = document.getElementById('sendBtn');
+var deviceSelect   = document.getElementById('deviceSelect');
+var autoDeviceMode = document.getElementById('autoDeviceMode');
+var sentenceModeEl = document.getElementById('sentenceMode');
+var keepBlankLines = document.getElementById('keepBlankLines');
+var copyBtn        = document.getElementById('copyBtn');
+var resetBtn       = document.getElementById('resetBtn');
+var statusLine     = document.getElementById('statusLine');
 
-var latestResult  = '';
-var debounceTimer = null;
-
+var latestResult = '';
+var isSending    = false;
 var UNIVERSAL_DEVICE = 'galaxy_standard';
 
 function getDeviceKey() {
@@ -514,23 +551,68 @@ function setStatus(msg, tone) {
   statusLine.className = 'status-line' + (tone ? ' ' + tone : '');
 }
 
-function updateBubble() {
-  var source = inputText.value;
-  if (!source.trim()) {
-    bubble.textContent = '';
-    chatHint.style.display = '';
-    latestResult = '';
-    return;
-  }
+function scrollBottom() {
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function addBubble(text, type) {
+  var row = document.createElement('div');
+  row.className = 'msg-row msg-row--' + type;
+  var bbl = document.createElement('div');
+  bbl.className = 'bubble bubble--' + type;
+  bbl.textContent = text;
+  row.appendChild(bbl);
+  chatArea.appendChild(row);
+  scrollBottom();
+  return row;
+}
+
+function addTypingIndicator() {
+  var row = document.createElement('div');
+  row.className = 'msg-row msg-row--received';
+  row.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+  chatArea.appendChild(row);
+  scrollBottom();
+  return row;
+}
+
+function sendMessage() {
+  if (isSending) return;
+  var source = inputText.value.trim();
+  if (!source) return;
+
+  // 힌트 숨기기
+  if (chatHint) { chatHint.style.display = 'none'; }
+
+  // 원문 파란 말풍선
+  addBubble(source, 'sent');
+
+  // 보정 결과 계산
   var result = normalizeText(source, {
     device:              getDeviceKey(),
     sentenceMode:        sentenceModeEl.checked,
     keepParagraphBreaks: keepBlankLines.checked,
   });
   latestResult = normalizeLineBreaks(result).trim();
-  bubble.textContent = latestResult;
-  chatHint.style.display = 'none';
-  chatArea.scrollTop = chatArea.scrollHeight;
+
+  // 입력창 초기화
+  inputText.value = '';
+  autoResize();
+
+  isSending = true;
+  sendBtn.disabled = true;
+
+  // 타이핑 인디케이터
+  var typingRow = addTypingIndicator();
+
+  // 딜레이 후 보정 말풍선 표시
+  setTimeout(function() {
+    chatArea.removeChild(typingRow);
+    addBubble(latestResult, 'received');
+    isSending = false;
+    sendBtn.disabled = false;
+    setStatus('보정 완료 · 복사 버튼으로 결과를 가져가세요', 'success');
+  }, 600);
 }
 
 function autoResize() {
@@ -543,7 +625,7 @@ function copyToClipboard() {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(latestResult)
       .then(function(){ setStatus('클립보드에 복사했습니다.', 'success'); })
-      .catch(function(){ fallbackCopy(); });
+      .catch(fallbackCopy);
   } else {
     fallbackCopy();
   }
@@ -561,47 +643,40 @@ function fallbackCopy() {
 }
 
 function resetAll() {
+  // 버블 전부 제거 후 힌트 복원
+  chatArea.innerHTML = '';
+  var hint = document.createElement('div');
+  hint.id = 'chatHint';
+  hint.className = 'chat-hint';
+  hint.innerHTML = '메시지를 입력하고<br>전송하면 보정된 줄바꿈을<br>말풍선으로 확인할 수 있어요';
+  chatArea.appendChild(hint);
+
   inputText.value = '';
   autoResize();
-  bubble.textContent = '';
-  chatHint.style.display = '';
   latestResult = '';
+  isSending = false;
+  sendBtn.disabled = false;
   setStatus('초기화했습니다.', '');
 }
 
-function scheduleUpdate() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(updateBubble, 120);
-}
-
 // ── 이벤트 바인딩 ────────────────────────────────────────────────────────────
-inputText.addEventListener('input', function() {
-  autoResize();
-  scheduleUpdate();
-});
+inputText.addEventListener('input', autoResize);
 
 inputText.addEventListener('keydown', function(e) {
-  // Cmd/Ctrl+Enter → 즉시 복사
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     e.preventDefault();
-    copyToClipboard();
+    sendMessage();
   }
 });
 
+sendBtn.addEventListener('click', sendMessage);
 copyBtn.addEventListener('click', copyToClipboard);
 resetBtn.addEventListener('click', resetAll);
 
 autoDeviceMode.addEventListener('change', function() {
   deviceSelect.disabled = autoDeviceMode.checked;
-  updateBubble();
 });
-
-deviceSelect.addEventListener('change', function() {
-  if (!autoDeviceMode.checked) updateBubble();
-});
-
-sentenceModeEl.addEventListener('change', updateBubble);
-keepBlankLines.addEventListener('change', updateBubble);
+deviceSelect.addEventListener('change', function() {});
 
 // ── 초기화 ────────────────────────────────────────────────────────────────────
 (function boot() {
