@@ -605,13 +605,35 @@ function sendMessage() {
   // 타이핑 인디케이터
   var typingRow = addTypingIndicator();
 
-  // 딜레이 후 보정 말풍선 표시
+  // 타이핑 인디케이터 후 글자 단위 타이핑 애니메이션
   setTimeout(function() {
     chatArea.removeChild(typingRow);
-    addBubble(latestResult, 'received');
-    isSending = false;
-    sendBtn.disabled = false;
-    setStatus('보정 완료 · 복사 버튼으로 결과를 가져가세요', 'success');
+
+    // 빈 말풍선 먼저 삽입
+    var row = document.createElement('div');
+    row.className = 'msg-row msg-row--received';
+    var bbl = document.createElement('div');
+    bbl.className = 'bubble bubble--received';
+    bbl.textContent = '';
+    row.appendChild(bbl);
+    chatArea.appendChild(row);
+    scrollBottom();
+
+    // 한 글자씩 타이핑
+    var chars = [...latestResult];
+    var idx = 0;
+    function typeNext() {
+      if (idx < chars.length) {
+        bbl.textContent += chars[idx++];
+        scrollBottom();
+        setTimeout(typeNext, 28);
+      } else {
+        isSending = false;
+        sendBtn.disabled = false;
+        setStatus('보정 완료 · 복사 버튼으로 결과를 가져가세요', 'success');
+      }
+    }
+    typeNext();
   }, 600);
 }
 
