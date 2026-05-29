@@ -49,7 +49,8 @@ body {
 }
 
 /* ── Phone Frame ─────────────────────────────────────────────────────────── */
-.phone-wrap { width: 100%; max-width: 400px; }
+/* --phone-frame-width / --bubble-max-width 는 JS calibrate()가 런타임에 설정 */
+.phone-wrap { width: 100%; max-width: min(var(--phone-frame-width, 380px), calc(100vw - 32px)); }
 
 .phone-frame {
   width: 100%;
@@ -100,7 +101,7 @@ body {
 
 /* ── Bubbles ─────────────────────────────────────────────────────────────── */
 .bubble {
-  max-width: 95%;
+  max-width: var(--bubble-max-width, 343px);
   padding: 10px 14px;
   font-size: 15px;
   line-height: 1.45;
@@ -538,6 +539,41 @@ function normalizeText(text, options) {
   return keepParagraphBreaks ? wrapped.join('\n\n') : wrapped.join('\n');
 }
 
+// ── 버블 너비 보정 ─────────────────────────────────────────────────────────────
+// 런타임에 maxUnits 개의 한글 글자 픽셀 폭을 측정 → CSS 변수 설정
+function calibrate() {
+  var deviceKey = getDeviceKey ? getDeviceKey() : DEFAULT_DEVICE;
+  var maxUnits  = (DEVICES[deviceKey] || DEVICES[DEFAULT_DEVICE]).maxUnits;
+
+  var ruler = document.createElement('span');
+  ruler.style.cssText = [
+    'position:absolute',
+    'top:-9999px',
+    'left:-9999px',
+    'visibility:hidden',
+    'white-space:nowrap',
+    'font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Segoe UI",sans-serif',
+    'font-size:15px',
+    'letter-spacing:normal',
+    'line-height:1',
+  ].join(';');
+  // 한글 1자 = 2 유닛 → maxUnits/2 자 = maxUnits 유닛
+  ruler.textContent = '가'.repeat(Math.ceil(maxUnits / 2));
+  document.body.appendChild(ruler);
+  var rulerW = ruler.getBoundingClientRect().width;
+  document.body.removeChild(ruler);
+
+  var bubblePadH   = 14 * 2;  // .bubble padding: 10px 14px
+  var chatPadH     = 12 * 2;  // .chat-area padding: 16px 12px 8px
+  var frameBorderH = 8  * 2;  // .phone-frame border: 8px solid
+
+  var bubbleMaxW  = Math.ceil(rulerW) + bubblePadH;
+  var phoneFrameW = bubbleMaxW + chatPadH + frameBorderH;
+
+  document.documentElement.style.setProperty('--bubble-max-width',  bubbleMaxW  + 'px');
+  document.documentElement.style.setProperty('--phone-frame-width', phoneFrameW + 'px');
+}
+
 // ── UI ────────────────────────────────────────────────────────────────────────
 var inputText      = document.getElementById('inputText');
 var chatArea       = document.getElementById('chatArea');
@@ -715,14 +751,18 @@ resetBtn.addEventListener('click', resetAll);
 
 autoDeviceMode.addEventListener('change', function() {
   deviceSelect.disabled = autoDeviceMode.checked;
+  calibrate();
 });
-deviceSelect.addEventListener('change', function() {});
+deviceSelect.addEventListener('change', function() {
+  calibrate();
+});
 
 // ── 초기화 ────────────────────────────────────────────────────────────────────
 (function boot() {
   inputText.value = '';
   autoResize();
   deviceSelect.disabled = autoDeviceMode.checked;
+  calibrate();
 })();
     </script>
   </body>
