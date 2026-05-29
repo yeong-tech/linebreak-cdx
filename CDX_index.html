@@ -49,7 +49,7 @@ body {
 }
 
 /* ── Phone Frame ─────────────────────────────────────────────────────────── */
-.phone-wrap { width: 100%; max-width: 320px; }
+.phone-wrap { width: 100%; max-width: 400px; }
 
 .phone-frame {
   width: 100%;
@@ -100,12 +100,13 @@ body {
 
 /* ── Bubbles ─────────────────────────────────────────────────────────────── */
 .bubble {
-  max-width: 75%;
+  max-width: 95%;
   padding: 10px 14px;
   font-size: 15px;
   line-height: 1.45;
-  white-space: pre;        /* 알고리즘 줄바꿈만 적용, CSS wrap 없음 */
-  overflow: hidden;        /* 긴 줄은 클리핑 */
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .bubble--sent {
